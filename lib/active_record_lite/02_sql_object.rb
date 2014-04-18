@@ -2,7 +2,7 @@ require_relative 'db_connection'
 require_relative '00_attr_accessor_object'
 require 'active_support/inflector'
 
-class SQLObject < AttrAccessorObject
+class SQLObject
   def self.columns
     if @column_names.nil?
       @column_names = DBConnection.execute2("SELECT * FROM #{self.table_name}")
