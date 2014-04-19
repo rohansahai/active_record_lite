@@ -67,7 +67,6 @@ class SQLObject
   def insert
     col_names = @attributes.keys.join(", ")
     question_marks = (["?"] * attribute_values.length).join(", ")
-    p self.class.table_name
     DBConnection.execute(<<-SQL, *attribute_values)
     INSERT INTO
     #{self.class.table_name} (#{col_names})
@@ -79,7 +78,6 @@ class SQLObject
 
   def initialize(params = {})
     self.attributes
-    
     if params.empty?
       self.class.columns.each do|col_name|
         params[col_name]  = nil
