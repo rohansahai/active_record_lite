@@ -1,7 +1,6 @@
 require_relative '03_searchable'
 require 'active_support/inflector'
 
-# Phase IVa
 class AssocOptions
   attr_accessor(
     :foreign_key,
@@ -11,7 +10,6 @@ class AssocOptions
 
   def model_class
     self.class_name.constantize
-    # ...
   end
 
   def table_name
@@ -36,7 +34,6 @@ class HasManyOptions < AssocOptions
 end
 
 module Associatable
-  # Phase IVb
   def belongs_to(name, options = {})
     options = BelongsToOptions.new(name, options)
     self.assoc_options[name] = options
@@ -55,12 +52,10 @@ module Associatable
   end
 
   def assoc_options
-    # Wait to implement this in Phase V. Modify `belongs_to`, too.
     @assoc_options = @assoc_options || {}
   end
 end
 
 class SQLObject
   extend Associatable
-  # Mixin Associatable here...
 end

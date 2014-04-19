@@ -112,7 +112,6 @@ class SQLObject
   def attribute_values
     values = []
     @attributes.each do |key, value|
-      #next if key == :id
       values << value
     end
     values
