@@ -10,11 +10,12 @@ class AssocOptions
   )
 
   def model_class
+    self.class_name.constantize
     # ...
   end
 
   def table_name
-    # ...
+    model_class.table_name
   end
 end
 
@@ -37,11 +38,19 @@ end
 module Associatable
   # Phase IVb
   def belongs_to(name, options = {})
-    options = BelongsToOptions(name, options)
+    options = BelongsToOptions.new(name, options)
+    define_method(name){
+      key = self.send(options.foreign_key)
+      options.model_class.where(:id => key).first
+    }
   end
 
   def has_many(name, options = {})
-    options = HasManyOptions(name, options)
+    options = HasManyOptions.new(name, self.to_s, options)
+    define_method(name){
+      key = self.send(options.primary_key) 
+      options.model_class.where(options.foreign_key => key)
+    }
   end
 
   def assoc_options
@@ -50,6 +59,7 @@ module Associatable
 end
 
 class SQLObject
+  extend Associatable
   # Mixin Associatable here...
 end
 
