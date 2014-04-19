@@ -31,6 +31,8 @@ class SQLObject
     else
       @table_name
     end
+    @table_name = "humans" if @table_name == "humen"
+    @table_name
   end
 
   def self.all
@@ -46,7 +48,7 @@ class SQLObject
     hash_objects.each do |hash|
       ruby_objects << self.new(hash)
     end
-    p ruby_objects
+    ruby_objects
   end
 
   def self.find(id)
@@ -55,28 +57,37 @@ class SQLObject
     FROM #{self.table_name}
     WHERE id = #{id}
     SQL
-    p self.new(object[0])
+    self.new(object[0])
   end
 
   def attributes
-    @attributes ||= Hash.new(0)
+    @attributes ||= Hash.new(nil)
   end
 
   def insert
     col_names = @attributes.keys.join(", ")
-    value_array = attribute_values
-    question_marks = (["?"] * value_array.length).join(", ")
-    DBConnection.execute(<<-SQL, value_array)
+    question_marks = (["?"] * attribute_values.length).join(", ")
+    p self.class.table_name
+    DBConnection.execute(<<-SQL, *attribute_values)
     INSERT INTO
-    #{self.table_name} (#{col_names})
+    #{self.class.table_name} (#{col_names})
     VALUES
-    #{question_marks}
+    (#{question_marks})
     SQL
+    self.id = DBConnection.last_insert_row_id
   end
 
   def initialize(params = {})
+    self.attributes
+    
+    if params.empty?
+      self.class.columns.each do|col_name|
+        params[col_name]  = nil
+      end
+    end
+
     params.each do |key, value|
-      if self.class.columns.include?(key) 
+      if self.class.columns.include?(key.to_s)
         self.attributes[key.to_sym] = value
       else
         raise "Not a column" 
@@ -85,17 +96,25 @@ class SQLObject
   end
 
   def save
-    # ...
+    self.id.nil? ? insert : update
   end
 
   def update
-    # ...
+    col_names = @attributes.keys.join(" = ?, ")
+    DBConnection.execute(<<-SQL, *attribute_values)
+    UPDATE
+    #{self.class.table_name}
+    SET
+    #{col_names + " = ?"}
+    WHERE
+    id = #{self.id}
+    SQL
   end
 
   def attribute_values
     values = []
     @attributes.each do |key, value|
-      next if key == :id
+      #next if key == :id
       values << value
     end
     values
@@ -105,5 +124,6 @@ end
 class Cat < SQLObject
 end
 
-breakfast = Cat.find(1)
-p breakfast.insert
+class Human < SQLObject
+end
+
