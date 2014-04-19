@@ -22,19 +22,15 @@ CREATE TABLE houses (
 
 INSERT INTO
   houses (address)
-      SELECT "26th and Guerrero" AS address
-UNION SELECT "Dolores and Market";
- 
+VALUES
+  ("26th and Guerrero"), ("Dolores and Market");
+
 INSERT INTO
   humans (fname, lname, house_id)
-      SELECT "Devon" AS fname, "Watts" AS lname, 1 AS house_id
-UNION SELECT "Matt", "Rubens", 1
-UNION SELECT "Ned", "Ruggeri", 2;
- 
+VALUES
+  ("Devon", "Watts", 1), ("Matt", "Rubens", 1), ("Ned", "Ruggeri", 2);
+
 INSERT INTO
   cats (name, owner_id)
-    SELECT "Breakfast" AS name, 1 AS owner_id
-UNION SELECT "Earl", 2
-UNION SELECT "Haskell", 3
-UNION SELECT "Markov", 3;
-  
+VALUES
+  ("Breakfast", 1), ("Earl", 2), ("Haskell", 3), ("Markov", 3);

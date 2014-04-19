@@ -39,6 +39,7 @@ module Associatable
   # Phase IVb
   def belongs_to(name, options = {})
     options = BelongsToOptions.new(name, options)
+    self.assoc_options[name] = options
     define_method(name){
       key = self.send(options.foreign_key)
       options.model_class.where(:id => key).first
@@ -55,6 +56,7 @@ module Associatable
 
   def assoc_options
     # Wait to implement this in Phase V. Modify `belongs_to`, too.
+    @assoc_options = @assoc_options || {}
   end
 end
 
@@ -62,5 +64,3 @@ class SQLObject
   extend Associatable
   # Mixin Associatable here...
 end
-
-options = BelongsToOptions.new('house')
